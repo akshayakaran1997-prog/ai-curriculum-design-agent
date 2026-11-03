@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Curriculum AI | Project Workspace</title>
+
+    <!-- Connect our dashboard stylesheet -->
+    <link rel="stylesheet" href="project.css">
+</head>
+
+<body>
+
+    <!-- Main application layout -->
+    <div class="app-container">
+
+        <!-- Sidebar navigation -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <span class="brand-icon">✦</span>
+                <span>CURRICULUM AI</span>
+            </div>
+
+            <p class="sidebar-label">WORKSPACE</p>
+
+            <nav class="navigation">
+                <a href="#" class="nav-link active">
+                    <span>▦</span> Project Overview
+                </a>
+
+                <a href="#project-details" class="nav-link">
+                    <span>▤</span> Project Details
+                </a>
+
+                <a href="#learner-analysis" class="nav-link">
+                    <span>♙</span> Learner Analysis
+                </a>
+
+                <a href="#source-material" class="nav-link">
+                    <span>▧</span> Source Material
+                </a>
+
+                <a href="#analysis" class="nav-link">
+                    <span>✧</span> AI Analysis
+                </a>
+
+                <a href="#curriculum" class="nav-link">
+                    <span>☷</span> Curriculum
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <p>AI-POWERED DESIGN</p>
+                <span>Built for Instructional Designers</span>
+            </div>
+
+        </aside>
+
+
+        <!-- Main dashboard content -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <span class="breadcrumb">Workspace / New Project</span>
+                </div>
+
+                <div class="profile">
+                    <span>Instructional Designer</span>
+                    <div class="avatar">ID</div>
+                </div>
+            </header>
+
+
+            <!-- Dashboard heading -->
+            <section class="welcome-section">
+
+                <div>
+                    <p class="eyebrow">YOUR DESIGN WORKSPACE</p>
+
+                    <h1>Let's build a learning experience.</h1>
+
+                    <p class="subtitle">
+                        Start with your training requirements,
+                        understand your learners and analyse your content.
+                    </p>
+                </div>
+
+                <div class="project-status">
+                    <span class="status-dot"></span>
+                    New Project
+                </div>
+
+            </section>
+
+
+            <!-- Project information -->
+            <section class="dashboard-section" id="project-details">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-number">01</span>
+                        <h2>Project Details</h2>
+                        <p>Tell us about the training project.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group full-width">
+                        <label for="projectName">Project Name *</label>
+                        <input
+                            type="text"
+                            id="projectName"
+                            placeholder="e.g. Cybersecurity Awareness Training"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseType">Training Category *</label>
+
+                        <select id="courseType">
+                            <option value="">Select category</option>
+                            <option>Technical Training</option>
+                            <option>Product Training</option>
+                            <option>Compliance Training</option>
+                            <option>Soft Skills</option>
+                            <option>Process Training</option>
+                            <option>Leadership Development</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration">Expected Duration</label>
+
+                        <select id="duration">
+                            <option value="">Select duration</option>
+                            <option>15–30 minutes</option>
+                            <option>30–60 minutes</option>
+                            <option>1–2 hours</option>
+                            <option>3–4 hours</option>
+                            <option>More than 4 hours</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delivery">Delivery Format</label>
+
+                        <select id="delivery">
+                            <option value="">Select format</option>
+                            <option>Self-paced eLearning</option>
+                            <option>Instructor-led Training</option>
+                            <option>Blended Learning</option>
+                            <option>Microlearning</option>
+                            <option>Video-based Learning</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty">Content Complexity</label>
+
+                        <select id="difficulty">
+                            <option value="">Select level</option>
+                            <option>Beginner</option>
+                            <option>Intermediate</option>
+                            <option>Advanced</option>
+                            <option>Mixed Levels</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="businessNeed">Business Requirement</label>
+
+                        <textarea
+                            id="businessNeed"
+                            placeholder="What business problem should this training address?"></textarea>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- Learner analysis -->
+            <section class="dashboard-section" id="learner-analysis">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-number">02</span>
+                        <h2>Learner Analysis</h2>
+                        <p>Understand the people who will take this course.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group full-width">
+                        <label for="targetAudience">Target Audience *</label>
+
+                        <textarea
+                            id="targetAudience"
+                            placeholder="Who are the learners? Mention job roles, departments and experience levels."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="existingKnowledge">
+                            What do learners already know?
+                        </label>
+
+                        <textarea
+                            id="existingKnowledge"
+                            placeholder="Describe their existing knowledge, skills and experience."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="learningOutcomes">
+                            What should learners be able to do after this course? *
+                        </label>
+
+                        <textarea
+                            id="learningOutcomes"
+                            placeholder="Describe the expected learning outcomes and observable actions."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="workplaceApplication">
+                            How will they apply the knowledge at work?
+                        </label>
+
+                        <textarea
+                            id="workplaceApplication"
+                            placeholder="Describe real workplace situations where learners will use these skills."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="performanceGap">Known Performance Gaps</label>
+
+                        <textarea
+                            id="performanceGap"
+                            placeholder="What mistakes, challenges or performance issues should the training address?"></textarea>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- Source document upload -->
+            <section class="dashboard-section" id="source-material">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-number">03</span>
+                        <h2>Source Material</h2>
+                        <p>Provide the reference content for curriculum development.</p>
+                    </div>
+                </div>
+
+                <div class="upload-area">
+
+                    <div class="upload-icon">⇧</div>
+
+                    <h3>Upload your training documents</h3>
+
+                    <p>
+                        Add PowerPoint, PDF or Word documents
+                        containing your base content.
+                    </p>
+
+                    <input
+                        type="file"
+                        id="sourceFiles"
+                        multiple
+                        accept=".pdf,.ppt,.pptx,.doc,.docx,.txt">
+
+                    <label for="sourceFiles" class="upload-button">
+                        Choose Documents
+                    </label>
+
+                    <p id="fileList" class="file-list">
+                        No documents selected.
+                    </p>
+
+                    <span class="file-hint">
+                        PDF · PPTX · DOCX · TXT
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- AI analysis -->
+            <section class="dashboard-section" id="analysis">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-number">04</span>
+                        <h2>AI Content Analysis</h2>
+                        <p>Prepare your project for intelligent content analysis.</p>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+
+                    <div class="analysis-icon">✦</div>
+
+                    <div>
+                        <h3>Document Intelligence</h3>
+
+                        <p>
+                            The AI engine will extract topics,
+                            identify key concepts, detect content gaps
+                            and organise your source material.
+                        </p>
+
+                        <span class="coming-soon">
+                            AI ENGINE — NEXT DEVELOPMENT STAGE
+                        </span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Curriculum generation -->
+            <section class="dashboard-section" id="curriculum">
+
+                <div class="section-heading">
+                    <div>
+                        <span class="section-number">05</span>
+                        <h2>Curriculum Generation</h2>
+                        <p>Turn the analysed content into a structured curriculum.</p>
+                    </div>
+                </div>
+
+                <div class="curriculum-card">
+
+                    <h3>Your curriculum will include</h3>
+
+                    <ul>
+                        <li>Modules and topics</li>
+                        <li>Slide-level content breakdown</li>
+                        <li>Learning objectives</li>
+                        <li>Bloom's Taxonomy levels</li>
+                        <li>Instructional strategies</li>
+                        <li>Visual recommendations</li>
+                        <li>Knowledge checks and assessments</li>
+                    </ul>
+
+                    <button type="button" id="generateButton" disabled>
+                        ✦ Generate Curriculum — Coming Soon
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Save project -->
+            <footer class="dashboard-footer">
+
+                <p id="saveStatus">
+                    Your project information is ready to be saved.
+                </p>
+
+                <button type="button" id="saveButton">
+                    Save Project Draft
+                </button>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+    <!-- Connect JavaScript -->
+    <script src="project.js"></script>
+
+</body>
+</html>

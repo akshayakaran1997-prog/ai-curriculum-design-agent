@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pathlib import Path
 from services.pdf_reader import extract_pdf_text
 from services.pdf_analyzer import analyze_pdf_content
@@ -83,13 +84,28 @@ async def upload_document(file: UploadFile = File(...)):
             # Stage 2: Analyze extracted text
             analysis_report = analyze_pdf_content(extracted_content)
 
-            # Stage 3: Return processing results
+            # Stage 3: Generate slide-by-slide curriculum
+            curriculum_data = generate_curriculum(analysis_report)
+
+            # Stage 4: Generate Excel workbook
+            excel_filename = f"{file_path.stem}_curriculum.xlsx"
+            excel_path = UPLOAD_DIR / excel_filename
+
+            generate_excel(
+                curriculum_data,
+                str(excel_path)
+            )
+
+            # Stage 5: Return processing results
             return {
-                "message": "PDF uploaded, extracted, and analyzed successfully",
+                "message": "PDF processed and curriculum Excel generated successfully",
                 "filename": safe_filename,
                 "status": "success",
                 "extracted_content": extracted_content,
-                "analysis_report": analysis_report
+                "analysis_report": analysis_report,
+                "curriculum": curriculum_data,
+                "excel_filename": excel_filename,
+                "download_url": f"/download/{excel_filename}"
             }
 
         # Other formats will be supported later
@@ -100,6 +116,9 @@ async def upload_document(file: UploadFile = File(...)):
             "status": "uploaded"
         }
 
+    except HTTPException:
+        raise
+
     except Exception as error:
         raise HTTPException(
             status_code=500,
@@ -108,3 +127,31 @@ async def upload_document(file: UploadFile = File(...)):
 
     finally:
         await file.close()
+
+
+# 7. Excel download endpoint
+@app.get("/download/{filename}")
+def download_excel(filename: str):
+
+    # Prevent directory traversal
+    safe_filename = Path(filename).name
+
+    if safe_filename != filename or not safe_filename.lower().endswith(".xlsx"):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid Excel filename"
+        )
+
+    file_path = UPLOAD_DIR / safe_filename
+
+    if not file_path.is_file():
+        raise HTTPException(
+            status_code=404,
+            detail="Excel file not found"
+        )
+
+    return FileResponse(
+        path=file_path,
+        filename=safe_filename,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )

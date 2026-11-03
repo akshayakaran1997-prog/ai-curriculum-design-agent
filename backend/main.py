@@ -2,7 +2,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
-from services.pdf_reader import extract_pdf_text
+from services.pdf_analyzer import analyze_pdf_content
 import shutil
 
 # 1. Create the FastAPI application
@@ -68,17 +68,24 @@ async def upload_document(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
 
         # Extract PDF content
-        if file_extension == ".pdf":
+        
+if file_extension == ".pdf":
 
-            extracted_content = extract_pdf_text(str(file_path))
+    # Stage 1: Extract text from the PDF
+    extracted_content = extract_pdf_text(str(file_path))
 
-            return {
-                "message": "PDF uploaded and extracted successfully!",
-                "filename": safe_filename,
-                "total_pages": len(extracted_content),
-                "extracted_content": extracted_content,
-                "status": "success"
-            }
+    # Stage 2: Analyze the extracted text
+    analysis_report = analyze_pdf_content(extracted_content)
+
+    # Stage 3: Return both results
+    return {
+        "message": "PDF uploaded, extracted, and analyzed successfully",
+        "filename": filename,
+        "status": "success",
+        "extracted_content": extracted_content,
+        "analysis_report": analysis_report
+    }
+
 
         # Other formats will be supported in later stages
         return {

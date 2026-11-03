@@ -2,6 +2,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
+from services.pdf_reader import extract_pdf_text
 import shutil
 
 # 1. Create the FastAPI application
@@ -11,7 +12,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 2. Allow our GitHub Pages frontend to communicate with the backend
+# 2. Allow frontend communication
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Create a folder to store uploaded documents
+# 3. Create upload folder
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -43,14 +44,14 @@ def health_check():
     }
 
 
-# 6. Document upload endpoint
+# 6. Document upload and extraction endpoint
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
 
-    # Allow only supported document formats
+    # Allow supported document formats
     allowed_extensions = [".pdf", ".pptx", ".docx", ".txt"]
 
-    file_extension = Path(file.filename).suffix.lower()
+    file_extension = Path(file.filename or "").suffix.lower()
 
     if file_extension not in allowed_extensions:
         raise HTTPException(
@@ -58,27 +59,39 @@ async def upload_document(file: UploadFile = File(...)):
             detail="Unsupported file format. Upload PDF, PPTX, DOCX or TXT."
         )
 
-    # Create a safe filename
     safe_filename = Path(file.filename).name
-
     file_path = UPLOAD_DIR / safe_filename
 
     try:
-        # Save the uploaded document
+        # Save uploaded document
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
+        # Extract PDF content
+        if file_extension == ".pdf":
+
+            extracted_content = extract_pdf_text(str(file_path))
+
+            return {
+                "message": "PDF uploaded and extracted successfully!",
+                "filename": safe_filename,
+                "total_pages": len(extracted_content),
+                "extracted_content": extracted_content,
+                "status": "success"
+            }
+
+        # Other formats will be supported in later stages
         return {
-            "message": "Document uploaded successfully!",
+            "message": "Document uploaded successfully. Extraction for this format is coming next.",
             "filename": safe_filename,
             "file_type": file_extension,
-            "status": "success"
+            "status": "uploaded"
         }
 
-    except Exception:
+    except Exception as error:
         raise HTTPException(
             status_code=500,
-            detail="Unable to save the uploaded document."
+            detail=f"Document processing failed: {str(error)}"
         )
 
     finally:

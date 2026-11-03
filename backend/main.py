@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from services.pdf_reader import extract_pdf_text
 from services.pdf_analyzer import analyze_pdf_content
+from services.curriculum_generator import generate_curriculum
+from services.excel_generator import generate_excel
 import shutil
 
 

@@ -2,8 +2,10 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
+from services.pdf_reader import extract_pdf_text
 from services.pdf_analyzer import analyze_pdf_content
 import shutil
+
 
 # 1. Create the FastAPI application
 app = FastAPI(
@@ -11,6 +13,7 @@ app = FastAPI(
     description="Backend for document analysis and curriculum generation",
     version="1.0.0"
 )
+
 
 # 2. Allow frontend communication
 app.add_middleware(
@@ -20,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # 3. Create upload folder
 UPLOAD_DIR = Path("uploads")
@@ -44,7 +48,7 @@ def health_check():
     }
 
 
-# 6. Document upload and extraction endpoint
+# 6. Document upload and processing endpoint
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
 
@@ -63,31 +67,30 @@ async def upload_document(file: UploadFile = File(...)):
     file_path = UPLOAD_DIR / safe_filename
 
     try:
+
         # Save uploaded document
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Extract PDF content
-        
-if file_extension == ".pdf":
+        # Process PDF documents
+        if file_extension == ".pdf":
 
-    # Stage 1: Extract text from the PDF
-    extracted_content = extract_pdf_text(str(file_path))
+            # Stage 1: Extract PDF text
+            extracted_content = extract_pdf_text(str(file_path))
 
-    # Stage 2: Analyze the extracted text
-    analysis_report = analyze_pdf_content(extracted_content)
+            # Stage 2: Analyze extracted text
+            analysis_report = analyze_pdf_content(extracted_content)
 
-    # Stage 3: Return both results
-    return {
-        "message": "PDF uploaded, extracted, and analyzed successfully",
-        "filename": filename,
-        "status": "success",
-        "extracted_content": extracted_content,
-        "analysis_report": analysis_report
-    }
+            # Stage 3: Return processing results
+            return {
+                "message": "PDF uploaded, extracted, and analyzed successfully",
+                "filename": safe_filename,
+                "status": "success",
+                "extracted_content": extracted_content,
+                "analysis_report": analysis_report
+            }
 
-
-        # Other formats will be supported in later stages
+        # Other formats will be supported later
         return {
             "message": "Document uploaded successfully. Extraction for this format is coming next.",
             "filename": safe_filename,

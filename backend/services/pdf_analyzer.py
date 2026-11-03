@@ -77,6 +77,9 @@ def is_heading_candidate(line):
             for word in words
             if word[0].isalpha()
         )
+  # Reject lines that contain no letters or numbers
+       if not re.search(r"[A-Za-z0-9]", line):
+    return False
     )
 
     return is_uppercase_heading or is_title_case

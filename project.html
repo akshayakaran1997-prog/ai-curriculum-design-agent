@@ -304,24 +304,22 @@
                 </div>
 
                 <div class="analysis-card">
+    <div class="analysis-icon">✦</div>
 
-                    <div class="analysis-icon">✦</div>
+    <div>
+        <h3>Document Intelligence</h3>
 
-                    <div>
-                        <h3>Document Intelligence</h3>
+        <p>
+            The AI engine will analyse your PDF, extract
+            key topics, identify learning opportunities
+            and detect content gaps.
+        </p>
 
-                        <p>
-                            The AI engine will extract topics,
-                            identify key concepts, detect content gaps
-                            and organise your source material.
-                        </p>
-
-                        <span class="coming-soon">
-                            AI ENGINE — NEXT DEVELOPMENT STAGE
-                        </span>
-                    </div>
-
-                </div>
+        <span class="coming-soon">
+            AI ENGINE — READY
+        </span>
+    </div>
+</div>
 
             </section>
 
@@ -337,25 +335,33 @@
                     </div>
                 </div>
 
-                <div class="curriculum-card">
+               <div class="curriculum-card">
 
-                    <h3>Your curriculum will include</h3>
+    <h3>Your curriculum will include</h3>
 
-                    <ul>
-                        <li>Modules and topics</li>
-                        <li>Slide-level content breakdown</li>
-                        <li>Learning objectives</li>
-                        <li>Bloom's Taxonomy levels</li>
-                        <li>Instructional strategies</li>
-                        <li>Visual recommendations</li>
-                        <li>Knowledge checks and assessments</li>
-                    </ul>
+    <ul>
+        <li>Course overview and purpose</li>
+        <li>Course-level learning objectives</li>
+        <li>Module-wise curriculum outline</li>
+        <li>Topics and learning approaches</li>
+        <li>Estimated module durations</li>
+        <li>Source page references</li>
+        <li>SME review recommendations</li>
+    </ul>
 
-                    <button type="button" id="generateButton" disabled>
-                        ✦ Generate Curriculum — Coming Soon
-                    </button>
+    <button type="button" id="generateButton">
+        ✦ Generate Curriculum
+    </button>
 
-                </div>
+    <p id="generationStatus" class="file-list">
+        Upload a PDF to begin curriculum generation.
+    </p>
+
+    <div id="curriculumResults"></div>
+
+    <div id="downloadSection"></div>
+
+</div>
 
             </section>
 

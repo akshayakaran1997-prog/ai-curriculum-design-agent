@@ -8,7 +8,7 @@ from services.pdf_analyzer import analyze_pdf_content
 from services.curriculum_generator import generate_curriculum
 from services.excel_generator import generate_excel
 import shutil
-
+from services.ai_service import generate_ai_response
 
 # 1. Create the FastAPI application
 app = FastAPI(

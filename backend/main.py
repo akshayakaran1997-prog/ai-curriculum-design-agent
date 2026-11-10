@@ -126,14 +126,14 @@ async def upload_document(file: UploadFile = File(...)):
 
             # Stage 5: Return processing results
             return {
-                "message": "PDF processed and curriculum Excel generated successfully",
-                "filename": safe_filename,
-                "status": "success",
-                "extracted_content": extracted_content,
-                "analysis_report": analysis_report,
-                "curriculum": curriculum_data,
-                "excel_filename": excel_filename,
-                "download_url": f"/download/{excel_filename}"
+               "message": "AI-powered curriculum generated successfully",
+    "filename": safe_filename,
+    "status": "success",
+    "document_analysis": analysis_report,
+    "curriculum": curriculum_data,
+    "total_slides": curriculum_data["total_slides"],
+    "excel_filename": excel_filename,
+    "download_url": f"/download/{excel_filename}"
             }
 
         # Other formats will be supported later

@@ -3,12 +3,14 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pathlib import Path
+import shutil
+
 from services.pdf_reader import extract_pdf_text
 from services.pdf_analyzer import analyze_pdf_content
 from services.curriculum_generator import generate_curriculum
 from services.excel_generator import generate_excel
-import shutil
 from services.ai_service import generate_ai_response
+
 
 # 1. Create the FastAPI application
 app = FastAPI(
@@ -49,6 +51,9 @@ def health_check():
         "status": "healthy",
         "application": "AI Curriculum Design Agent"
     }
+
+
+# 6. Test Gemini AI connection
 @app.get("/test-ai")
 def test_ai():
 
@@ -73,11 +78,12 @@ def test_ai():
             detail=str(error)
         )
 
-# 6. Document upload and processing endpoint
+
+# 7. Document upload and processing endpoint
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
 
-    # Allow supported document formats
+    # Check supported document formats
     allowed_extensions = [".pdf", ".pptx", ".docx", ".txt"]
 
     file_extension = Path(file.filename or "").suffix.lower()
@@ -93,50 +99,51 @@ async def upload_document(file: UploadFile = File(...)):
 
     try:
 
-        # Save uploaded document
+        # Stage 1: Save uploaded document
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Process PDF documents
+        # Stage 2: Process PDF documents
         if file_extension == ".pdf":
 
-            # Stage 1: Extract PDF text
+            # Stage 2.1: Extract PDF text
             extracted_content = extract_pdf_text(str(file_path))
 
-            # Stage 2: Analyze extracted text
+            # Stage 2.2: Analyze extracted content using AI
             analysis_report = analyze_pdf_content(extracted_content)
 
-            # Stage 3: Generate slide-by-slide curriculum
+            # Stage 2.3: Generate slide-by-slide curriculum using AI
             curriculum_data = generate_curriculum(
-            analysis_report,
-            extracted_content
+                analysis_report,
+                extracted_content
             )
 
-            # Stage 4: Generate the eight-sheet Excel workbook
-        excel_filename = f"{file_path.stem}_curriculum.xlsx"
-        excel_path = UPLOAD_DIR / excel_filename
+            # Stage 2.4: Generate the eight-sheet Excel workbook
+            excel_filename = f"{file_path.stem}_curriculum.xlsx"
+            excel_path = UPLOAD_DIR / excel_filename
 
-         generate_excel(
-        curriculum_data=curriculum_data,
-        output_path=str(excel_path),
-        analysis_report=analysis_report,
-        project_details={
-        "project_name": file_path.stem
-          }
+            generate_excel(
+                curriculum_data=curriculum_data,
+                output_path=str(excel_path),
+                analysis_report=analysis_report,
+                project_details={
+                    "project_name": file_path.stem
+                }
+            )
 
-            # Stage 5: Return processing results
+            # Stage 2.5: Return processing results
             return {
-               "message": "AI-powered curriculum generated successfully",
-    "filename": safe_filename,
-    "status": "success",
-    "document_analysis": analysis_report,
-    "curriculum": curriculum_data,
-    "total_slides": curriculum_data["total_slides"],
-    "excel_filename": excel_filename,
-    "download_url": f"/download/{excel_filename}"
+                "message": "AI-powered curriculum generated successfully",
+                "filename": safe_filename,
+                "status": "success",
+                "document_analysis": analysis_report,
+                "curriculum": curriculum_data,
+                "total_slides": curriculum_data["total_slides"],
+                "excel_filename": excel_filename,
+                "download_url": f"/download/{excel_filename}"
             }
 
-        # Other formats will be supported later
+        # Stage 3: Handle other document formats
         return {
             "message": "Document uploaded successfully. Extraction for this format is coming next.",
             "filename": safe_filename,
@@ -157,7 +164,7 @@ async def upload_document(file: UploadFile = File(...)):
         await file.close()
 
 
-# 7. Excel download endpoint
+# 8. Excel download endpoint
 @app.get("/download/{filename}")
 def download_excel(filename: str):
 

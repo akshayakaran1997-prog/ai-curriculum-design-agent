@@ -49,7 +49,29 @@ def health_check():
         "status": "healthy",
         "application": "AI Curriculum Design Agent"
     }
+@app.get("/test-ai")
+def test_ai():
 
+    prompt = """
+    You are an instructional design assistant.
+
+    Explain the importance of learning objectives
+    in an eLearning course in three simple points.
+    """
+
+    try:
+        result = generate_ai_response(prompt)
+
+        return {
+            "status": "success",
+            "ai_response": result
+        }
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=str(error)
+        )
 
 # 6. Document upload and processing endpoint
 @app.post("/upload")

@@ -112,14 +112,17 @@ async def upload_document(file: UploadFile = File(...)):
             extracted_content
             )
 
-            # Stage 4: Generate Excel workbook
-            excel_filename = f"{file_path.stem}_curriculum.xlsx"
-            excel_path = UPLOAD_DIR / excel_filename
+            # Stage 4: Generate the eight-sheet Excel workbook
+        excel_filename = f"{file_path.stem}_curriculum.xlsx"
+        excel_path = UPLOAD_DIR / excel_filename
 
-            generate_excel(
-                curriculum_data,
-                str(excel_path)
-            )
+         generate_excel(
+        curriculum_data=curriculum_data,
+        output_path=str(excel_path),
+        analysis_report=analysis_report,
+        project_details={
+        "project_name": file_path.stem
+          }
 
             # Stage 5: Return processing results
             return {

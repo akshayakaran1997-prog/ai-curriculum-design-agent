@@ -107,7 +107,10 @@ async def upload_document(file: UploadFile = File(...)):
             analysis_report = analyze_pdf_content(extracted_content)
 
             # Stage 3: Generate slide-by-slide curriculum
-            curriculum_data = generate_curriculum(analysis_report)
+            curriculum_data = generate_curriculum(
+            analysis_report,
+            extracted_content
+            )
 
             # Stage 4: Generate Excel workbook
             excel_filename = f"{file_path.stem}_curriculum.xlsx"

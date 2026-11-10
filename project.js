@@ -1,21 +1,40 @@
 
 /* =========================================
    CURRICULUM AI - PROJECT WORKSPACE
-   Dashboard functionality
+   Frontend + FastAPI Integration
 ========================================= */
 
-// 1. Find the HTML elements we want to control.
+// =========================================
+// 1. BACKEND CONFIGURATION
+// =========================================
+
+// Replace this with your actual Codespaces
+// forwarded port 8000 URL.
+// Do not include a trailing slash.
+
+const API_BASE_URL = "https://silver-cod-5v5jxx9rx9rrh7qrp-8000.app.github.dev";
+
+
+// =========================================
+// 2. FIND HTML ELEMENTS
+// =========================================
 
 const saveButton = document.getElementById("saveButton");
-
 const saveStatus = document.getElementById("saveStatus");
 
 const fileInput = document.getElementById("sourceFiles");
-
 const fileList = document.getElementById("fileList");
 
+const generateButton = document.getElementById("generateButton");
+const generationStatus = document.getElementById("generationStatus");
 
-// 2. List all project fields that we want to save.
+const curriculumResults = document.getElementById("curriculumResults");
+const downloadSection = document.getElementById("downloadSection");
+
+
+// =========================================
+// 3. PROJECT FIELDS
+// =========================================
 
 const projectFields = [
     "projectName",
@@ -32,28 +51,45 @@ const projectFields = [
 ];
 
 
-// 3. Display selected document names.
+// =========================================
+// 4. DISPLAY SELECTED PDF
+// =========================================
 
 fileInput.addEventListener("change", function () {
 
-    const files = Array.from(fileInput.files);
+    const file = fileInput.files[0];
 
-    if (files.length === 0) {
-        fileList.textContent = "No documents selected.";
+    curriculumResults.innerHTML = "";
+    downloadSection.innerHTML = "";
+
+    if (!file) {
+        fileList.textContent = "No document selected.";
         return;
     }
 
-    const fileNames = files.map(function (file) {
-        return file.name;
-    });
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+
+    if (fileExtension !== "pdf") {
+
+        fileList.textContent = "Please select a PDF document.";
+
+        fileInput.value = "";
+
+        return;
+    }
 
     fileList.textContent =
-        "Selected documents: " + fileNames.join(", ");
+        "Selected document: " + file.name;
+
+    generationStatus.textContent =
+        "Your PDF is ready for AI analysis.";
 
 });
 
 
-// 4. Collect the information entered in the form.
+// =========================================
+// 5. COLLECT PROJECT INFORMATION
+// =========================================
 
 function collectProjectData() {
 
@@ -63,18 +99,13 @@ function collectProjectData() {
 
         const field = document.getElementById(fieldId);
 
-        projectData[fieldId] = field.value.trim();
+        projectData[fieldId] = field ? field.value.trim() : "";
 
     });
 
-    // Save document names as information only.
-    // Actual document contents are not uploaded yet.
-
-    projectData.documentNames = Array.from(fileInput.files).map(
-        function (file) {
-            return file.name;
-        }
-    );
+    projectData.documentNames = fileInput.files.length
+        ? [fileInput.files[0].name]
+        : [];
 
     projectData.lastSaved = new Date().toISOString();
 
@@ -83,7 +114,9 @@ function collectProjectData() {
 }
 
 
-// 5. Save the project draft in browser storage.
+// =========================================
+// 6. SAVE PROJECT DRAFT
+// =========================================
 
 function saveProject() {
 
@@ -98,7 +131,6 @@ function saveProject() {
         document.getElementById("projectName").focus();
 
         return;
-
     }
 
     const projectData = collectProjectData();
@@ -124,13 +156,12 @@ function saveProject() {
 
 }
 
-
-// 6. Connect the save button to the save function.
-
 saveButton.addEventListener("click", saveProject);
 
 
-// 7. Restore a previously saved project draft.
+// =========================================
+// 7. RESTORE PROJECT DRAFT
+// =========================================
 
 function loadProject() {
 
@@ -164,9 +195,9 @@ function loadProject() {
         ) {
 
             fileList.textContent =
-                "Previously selected document names: " +
+                "Previously selected document: " +
                 projectData.documentNames.join(", ") +
-                ". Please select the files again.";
+                ". Please select the PDF again.";
 
         }
 
@@ -185,9 +216,395 @@ function loadProject() {
 }
 
 
-// 8. Highlight the selected sidebar navigation link.
+// =========================================
+// 8. GENERATE CURRICULUM USING FASTAPI
+// =========================================
 
-const navigationLinks = document.querySelectorAll(".nav-link");
+async function generateCurriculum() {
+
+    const file = fileInput.files[0];
+
+    // Validate project name
+
+    const projectName =
+        document.getElementById("projectName").value.trim();
+
+    if (!projectName) {
+
+        generationStatus.textContent =
+            "Please enter a project name first.";
+
+        document.getElementById("projectName").focus();
+
+        return;
+    }
+
+    // Validate PDF selection
+
+    if (!file) {
+
+        generationStatus.textContent =
+            "Please upload a PDF document first.";
+
+        return;
+    }
+
+    if (file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")) {
+
+        generationStatus.textContent =
+            "Only PDF documents are supported.";
+
+        return;
+    }
+
+    // Validate backend URL
+
+    if (API_BASE_URL.includes("PASTE_YOUR")) {
+
+        generationStatus.textContent =
+            "Please configure your FastAPI backend URL in project.js.";
+
+        return;
+    }
+
+    // Clear previous results
+
+    curriculumResults.innerHTML = "";
+    downloadSection.innerHTML = "";
+
+    // Show processing status
+
+    generateButton.disabled = true;
+
+    generateButton.textContent =
+        "Generating Curriculum...";
+
+    generationStatus.textContent =
+        "Uploading document and analysing its content. Please wait...";
+
+    try {
+
+        // Prepare PDF for backend upload
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        // Send PDF to FastAPI
+
+        const response = await fetch(
+            `${API_BASE_URL}/upload`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        // Read backend response
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.detail || data.message ||
+                "Unable to generate curriculum."
+            );
+
+        }
+
+        if (data.status !== "success" || !data.curriculum) {
+
+            throw new Error(
+                data.message || "Unexpected response from the backend."
+            );
+
+        }
+
+        // Display success message
+
+        generationStatus.textContent =
+            "Curriculum generated successfully!";
+
+        // Display curriculum preview
+
+        displayCurriculum(data.curriculum);
+
+        // Display Excel download link
+
+        displayDownloadLink(data);
+
+    } catch (error) {
+
+        console.error("Curriculum generation error:", error);
+
+        generationStatus.textContent =
+            "Error: " + error.message;
+
+    } finally {
+
+        generateButton.disabled = false;
+
+        generateButton.textContent =
+            "✦ Generate Curriculum";
+
+    }
+
+}
+
+
+// =========================================
+// 9. DISPLAY GENERATED CURRICULUM
+// =========================================
+
+function displayCurriculum(curriculum) {
+
+    curriculumResults.innerHTML = "";
+
+    const overview = curriculum.course_overview || {};
+
+    const modules = curriculum.curriculum_outline || [];
+
+    // Course overview heading
+
+    const heading = document.createElement("h3");
+
+    heading.textContent = "Generated Course Overview";
+
+    curriculumResults.appendChild(heading);
+
+    // Course overview information
+
+    const overviewContainer = document.createElement("div");
+
+    overviewContainer.className = "generated-overview";
+
+    addTextItem(
+        overviewContainer,
+        "Course Title",
+        overview.course_title
+    );
+
+    addTextItem(
+        overviewContainer,
+        "Business Need",
+        overview.business_need
+    );
+
+    addTextItem(
+        overviewContainer,
+        "Course Purpose",
+        overview.course_purpose
+    );
+
+    addTextItem(
+        overviewContainer,
+        "Target Audience",
+        overview.target_audience
+    );
+
+    addTextItem(
+        overviewContainer,
+        "Delivery Format",
+        overview.delivery_format
+    );
+
+    addTextItem(
+        overviewContainer,
+        "Estimated Duration",
+        overview.total_duration_minutes
+            ? overview.total_duration_minutes + " minutes"
+            : "Not specified"
+    );
+
+    // Learning objectives
+
+    const objectiveHeading = document.createElement("h4");
+
+    objectiveHeading.textContent = "Learning Objectives";
+
+    overviewContainer.appendChild(objectiveHeading);
+
+    const objectiveList = document.createElement("ul");
+
+    (overview.learning_objectives || []).forEach(function (objective) {
+
+        const item = document.createElement("li");
+
+        item.textContent = objective;
+
+        objectiveList.appendChild(item);
+
+    });
+
+    overviewContainer.appendChild(objectiveList);
+
+    curriculumResults.appendChild(overviewContainer);
+
+
+    // Module outline heading
+
+    const moduleHeading = document.createElement("h3");
+
+    moduleHeading.textContent =
+        "Curriculum Outline (" + modules.length + " Modules)";
+
+    curriculumResults.appendChild(moduleHeading);
+
+
+    // Display each module
+
+    modules.forEach(function (module) {
+
+        const moduleCard = document.createElement("div");
+
+        moduleCard.className = "generated-module";
+
+        const title = document.createElement("h4");
+
+        title.textContent =
+            "Module " + module.module_number +
+            ": " + module.module_title;
+
+        moduleCard.appendChild(title);
+
+        addTextItem(
+            moduleCard,
+            "What learners will learn",
+            module.what_learners_will_learn
+        );
+
+        addTextItem(
+            moduleCard,
+            "Learning Approach",
+            module.learning_approach
+        );
+
+        addTextItem(
+            moduleCard,
+            "Estimated Duration",
+            module.estimated_duration_minutes
+                ? module.estimated_duration_minutes + " minutes"
+                : "Not specified"
+        );
+
+        addTextItem(
+            moduleCard,
+            "Source Pages",
+            (module.source_pages || []).join(", ")
+        );
+
+        // Topics covered
+
+        const topicsHeading = document.createElement("p");
+
+        topicsHeading.textContent = "Topics Covered:";
+
+        moduleCard.appendChild(topicsHeading);
+
+        const topicList = document.createElement("ul");
+
+        (module.topics_covered || []).forEach(function (topic) {
+
+            const topicItem = document.createElement("li");
+
+            topicItem.textContent = topic;
+
+            topicList.appendChild(topicItem);
+
+        });
+
+        moduleCard.appendChild(topicList);
+
+        curriculumResults.appendChild(moduleCard);
+
+    });
+
+}
+
+
+// =========================================
+// 10. HELPER TO DISPLAY TEXT SAFELY
+// =========================================
+
+function addTextItem(container, label, value) {
+
+    const paragraph = document.createElement("p");
+
+    const strong = document.createElement("strong");
+
+    strong.textContent = label + ": ";
+
+    const text = document.createTextNode(
+        value !== undefined && value !== null && value !== ""
+            ? String(value)
+            : "Not specified"
+    );
+
+    paragraph.appendChild(strong);
+
+    paragraph.appendChild(text);
+
+    container.appendChild(paragraph);
+
+}
+
+
+// =========================================
+// 11. DISPLAY EXCEL DOWNLOAD LINK
+// =========================================
+
+function displayDownloadLink(data) {
+
+    downloadSection.innerHTML = "";
+
+    const heading = document.createElement("h3");
+
+    heading.textContent = "Download Your Curriculum";
+
+    const description = document.createElement("p");
+
+    description.textContent =
+        "Your four-sheet curriculum workbook is ready.";
+
+    const downloadLink = document.createElement("a");
+
+    downloadLink.href =
+        API_BASE_URL + data.download_url;
+
+    downloadLink.textContent =
+        "Download Curriculum Excel";
+
+    downloadLink.className = "download-button";
+
+    downloadLink.setAttribute("download", "");
+
+    downloadSection.appendChild(heading);
+
+    downloadSection.appendChild(description);
+
+    downloadSection.appendChild(downloadLink);
+
+}
+
+
+// =========================================
+// 12. CONNECT GENERATE BUTTON
+// =========================================
+
+generateButton.addEventListener(
+    "click",
+    generateCurriculum
+);
+
+
+// =========================================
+// 13. SIDEBAR NAVIGATION
+// =========================================
+
+const navigationLinks =
+    document.querySelectorAll(".nav-link");
 
 navigationLinks.forEach(function (link) {
 
@@ -206,6 +623,11 @@ navigationLinks.forEach(function (link) {
 });
 
 
-// 9. Load saved project information when the page opens.
+// =========================================
+// 14. LOAD SAVED PROJECT ON PAGE OPEN
+// =========================================
 
-document.addEventListener("DOMContentLoaded", loadProject);
+document.addEventListener(
+    "DOMContentLoaded",
+    loadProject
+);

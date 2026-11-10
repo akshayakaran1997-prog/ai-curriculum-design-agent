@@ -4,3 +4,4 @@ python-multipart
 pymupdf
 openpyxl
 google-genai
+anthropic

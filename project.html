@@ -1,13 +1,13 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Curriculum AI | Project Workspace</title>
 
-    <!-- Connect our dashboard stylesheet -->
     <link rel="stylesheet" href="project.css">
 </head>
 
@@ -59,7 +59,6 @@
 
         </aside>
 
-
         <!-- Main dashboard content -->
         <main class="main-content">
 
@@ -73,7 +72,6 @@
                     <div class="avatar">ID</div>
                 </div>
             </header>
-
 
             <!-- Dashboard heading -->
             <section class="welcome-section">
@@ -95,7 +93,6 @@
                 </div>
 
             </section>
-
 
             <!-- Project information -->
             <section class="dashboard-section" id="project-details">
@@ -183,7 +180,6 @@
                 </div>
             </section>
 
-
             <!-- Learner analysis -->
             <section class="dashboard-section" id="learner-analysis">
 
@@ -246,7 +242,6 @@
                 </div>
             </section>
 
-
             <!-- Source document upload -->
             <section class="dashboard-section" id="source-material">
 
@@ -262,35 +257,33 @@
 
                     <div class="upload-icon">⇧</div>
 
-                    <h3>Upload your training documents</h3>
+                    <h3>Upload your training document</h3>
 
                     <p>
-                        Add PowerPoint, PDF or Word documents
-                        containing your base content.
+                        Upload a PDF containing your base content.
+                        The AI will analyse it to create your curriculum.
                     </p>
 
                     <input
                         type="file"
                         id="sourceFiles"
-                        multiple
-                        accept=".pdf,.ppt,.pptx,.doc,.docx,.txt">
+                        accept=".pdf,application/pdf">
 
                     <label for="sourceFiles" class="upload-button">
-                        Choose Documents
+                        Choose PDF Document
                     </label>
 
                     <p id="fileList" class="file-list">
-                        No documents selected.
+                        No document selected.
                     </p>
 
                     <span class="file-hint">
-                        PDF · PPTX · DOCX · TXT
+                        PDF only · One document at a time
                     </span>
 
                 </div>
 
             </section>
-
 
             <!-- AI analysis -->
             <section class="dashboard-section" id="analysis">
@@ -299,30 +292,31 @@
                     <div>
                         <span class="section-number">04</span>
                         <h2>AI Content Analysis</h2>
-                        <p>Prepare your project for intelligent content analysis.</p>
+                        <p>Analyse your source material using AI.</p>
                     </div>
                 </div>
 
                 <div class="analysis-card">
-    <div class="analysis-icon">✦</div>
 
-    <div>
-        <h3>Document Intelligence</h3>
+                    <div class="analysis-icon">✦</div>
 
-        <p>
-            The AI engine will analyse your PDF, extract
-            key topics, identify learning opportunities
-            and detect content gaps.
-        </p>
+                    <div>
+                        <h3>Document Intelligence</h3>
 
-        <span class="coming-soon">
-            AI ENGINE — READY
-        </span>
-    </div>
-</div>
+                        <p>
+                            The AI engine will analyse your PDF, extract
+                            key topics, identify learning opportunities
+                            and detect content gaps.
+                        </p>
+
+                        <span class="coming-soon">
+                            AI ENGINE — READY
+                        </span>
+                    </div>
+
+                </div>
 
             </section>
-
 
             <!-- Curriculum generation -->
             <section class="dashboard-section" id="curriculum">
@@ -335,36 +329,37 @@
                     </div>
                 </div>
 
-               <div class="curriculum-card">
+                <div class="curriculum-card">
 
-    <h3>Your curriculum will include</h3>
+                    <h3>Your curriculum will include</h3>
 
-    <ul>
-        <li>Course overview and purpose</li>
-        <li>Course-level learning objectives</li>
-        <li>Module-wise curriculum outline</li>
-        <li>Topics and learning approaches</li>
-        <li>Estimated module durations</li>
-        <li>Source page references</li>
-        <li>SME review recommendations</li>
-    </ul>
+                    <ul>
+                        <li>Course overview and purpose</li>
+                        <li>Course-level learning objectives</li>
+                        <li>Module-wise curriculum outline</li>
+                        <li>Topics and learning approaches</li>
+                        <li>Estimated module durations</li>
+                        <li>Source page references</li>
+                        <li>SME review recommendations</li>
+                    </ul>
 
-    <button type="button" id="generateButton">
-        ✦ Generate Curriculum
-    </button>
+                    <button type="button" id="generateButton">
+                        ✦ Generate Curriculum
+                    </button>
 
-    <p id="generationStatus" class="file-list">
-        Upload a PDF to begin curriculum generation.
-    </p>
+                    <p id="generationStatus" class="file-list">
+                        Upload a PDF to begin curriculum generation.
+                    </p>
 
-    <div id="curriculumResults"></div>
+                    <!-- Generated curriculum preview -->
+                    <div id="curriculumResults"></div>
 
-    <div id="downloadSection"></div>
+                    <!-- Excel download link -->
+                    <div id="downloadSection"></div>
 
-</div>
+                </div>
 
             </section>
-
 
             <!-- Save project -->
             <footer class="dashboard-footer">

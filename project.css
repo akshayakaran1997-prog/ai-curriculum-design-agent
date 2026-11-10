@@ -4,6 +4,7 @@
    Main visual design
 ========================================= */
 
+
 /* 1. Global settings */
 
 * {
@@ -37,12 +38,14 @@ body {
     line-height: 1.6;
 }
 
+
 /* 2. Main application layout */
 
 .app-container {
     display: flex;
     min-height: 100vh;
 }
+
 
 /* 3. Sidebar */
 
@@ -129,6 +132,7 @@ body {
     margin-bottom: 5px;
 }
 
+
 /* 4. Main content area */
 
 .main-content {
@@ -136,6 +140,7 @@ body {
     min-width: 0;
     padding: 0 48px 40px;
 }
+
 
 /* 5. Top navigation bar */
 
@@ -172,6 +177,7 @@ body {
     justify-content: center;
     font-weight: bold;
 }
+
 
 /* 6. Welcome section */
 
@@ -223,6 +229,7 @@ body {
     margin-right: 6px;
 }
 
+
 /* 7. Dashboard sections */
 
 .dashboard-section {
@@ -259,6 +266,7 @@ body {
     font-size: 12px;
     color: var(--muted);
 }
+
 
 /* 8. Form layout */
 
@@ -317,6 +325,7 @@ textarea {
     resize: vertical;
     line-height: 1.6;
 }
+
 
 /* 9. Document upload area */
 
@@ -391,6 +400,7 @@ textarea {
     letter-spacing: 1px;
 }
 
+
 /* 10. AI analysis card */
 
 .analysis-card {
@@ -434,6 +444,7 @@ textarea {
     letter-spacing: 1px;
 }
 
+
 /* 11. Curriculum card */
 
 .curriculum-card {
@@ -474,21 +485,138 @@ button {
     cursor: pointer;
 }
 
+
+/* 12. Generate Curriculum button */
+
 #generateButton {
-    background: #aebbc8;
-    color: white;
-    padding: 12px 20px;
+    background: var(--teal-dark);
+    color: var(--white);
+    padding: 13px 22px;
     border-radius: 7px;
     font-size: 12px;
     font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#generateButton:hover:not(:disabled) {
+    background: #08796f;
+    transform: translateY(-1px);
+}
+
+#generateButton:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 #generateButton:disabled {
+    background: #aebbc8;
+    color: white;
     cursor: not-allowed;
-    opacity: 0.8;
+    opacity: 1;
 }
 
-/* 12. Footer and save button */
+
+/* 13. Generated curriculum results */
+
+#curriculumResults {
+    margin-top: 25px;
+}
+
+#curriculumResults > h3 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 17px;
+}
+
+.generated-overview,
+.generated-module {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 20px;
+    margin-bottom: 15px;
+    overflow-wrap: anywhere;
+}
+
+.generated-overview p,
+.generated-module p {
+    color: #536278;
+    font-size: 13px;
+    margin-bottom: 9px;
+}
+
+.generated-overview h4,
+.generated-module h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.generated-overview ul,
+.generated-module ul {
+    display: block;
+    list-style: disc;
+    padding-left: 22px;
+    margin: 8px 0 15px;
+}
+
+.generated-overview li,
+.generated-module li {
+    display: list-item;
+    margin-bottom: 6px;
+    color: #536278;
+    font-size: 12px;
+}
+
+.generated-overview li::before,
+.generated-module li::before {
+    content: none;
+}
+
+.generated-module {
+    border-left: 4px solid var(--teal);
+}
+
+
+/* 14. Excel download section */
+
+#downloadSection {
+    margin-top: 22px;
+    padding: 20px;
+    background: #eaf7f3;
+    border: 1px solid #ccebe1;
+    border-radius: 9px;
+}
+
+#downloadSection h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+#downloadSection p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 15px;
+}
+
+.download-button {
+    display: inline-block;
+    background: var(--teal-dark);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.download-button:hover {
+    background: #08796f;
+}
+
+
+/* 15. Footer and save button */
 
 .dashboard-footer {
     display: flex;
@@ -521,7 +649,8 @@ button {
     transform: scale(0.98);
 }
 
-/* 13. Responsive design for tablets and mobiles */
+
+/* 16. Responsive design for tablets */
 
 @media (max-width: 900px) {
 
@@ -535,6 +664,9 @@ button {
     }
 
 }
+
+
+/* 17. Responsive design for mobiles */
 
 @media (max-width: 650px) {
 
@@ -607,6 +739,14 @@ button {
 
     #saveButton {
         width: 100%;
+    }
+
+    #generateButton {
+        width: 100%;
+    }
+
+    .analysis-card {
+        flex-direction: column;
     }
 
 }

@@ -15,8 +15,8 @@ from services.ai_service import generate_ai_response
 # 1. Create the FastAPI application
 app = FastAPI(
     title="AI Curriculum Design Agent",
-    description="Backend for document analysis and curriculum generation",
-    version="1.0.0"
+    description="AI-powered course curriculum design and generation",
+    version="2.0.0"
 )
 
 
@@ -40,7 +40,8 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 def home():
     return {
         "message": "AI Curriculum Design Agent Backend is running!",
-        "status": "success"
+        "status": "success",
+        "version": "2.0.0"
     }
 
 
@@ -79,11 +80,11 @@ def test_ai():
         )
 
 
-# 7. Document upload and processing endpoint
+# 7. Document upload and curriculum generation
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
 
-    # Check supported document formats
+    # Supported document formats
     allowed_extensions = [".pdf", ".pptx", ".docx", ".txt"]
 
     file_extension = Path(file.filename or "").suffix.lower()
@@ -106,19 +107,19 @@ async def upload_document(file: UploadFile = File(...)):
         # Stage 2: Process PDF documents
         if file_extension == ".pdf":
 
-            # Stage 2.1: Extract PDF text
+            # Stage 2.1: Extract PDF content
             extracted_content = extract_pdf_text(str(file_path))
 
-            # Stage 2.2: Analyze extracted content using AI
+            # Stage 2.2: Analyze source document
             analysis_report = analyze_pdf_content(extracted_content)
 
-            # Stage 2.3: Generate slide-by-slide curriculum using AI
+            # Stage 2.3: Generate concise course curriculum
             curriculum_data = generate_curriculum(
                 analysis_report,
                 extracted_content
             )
 
-            # Stage 2.4: Generate the eight-sheet Excel workbook
+            # Stage 2.4: Generate four-sheet Excel workbook
             excel_filename = f"{file_path.stem}_curriculum.xlsx"
             excel_path = UPLOAD_DIR / excel_filename
 
@@ -131,19 +132,19 @@ async def upload_document(file: UploadFile = File(...)):
                 }
             )
 
-            # Stage 2.5: Return processing results
+            # Stage 2.5: Return curriculum results
             return {
-                "message": "AI-powered curriculum generated successfully",
+                "message": "AI-powered course curriculum generated successfully",
                 "filename": safe_filename,
                 "status": "success",
                 "document_analysis": analysis_report,
                 "curriculum": curriculum_data,
-                "total_slides": curriculum_data["total_slides"],
+                "total_modules": curriculum_data["total_modules"],
                 "excel_filename": excel_filename,
                 "download_url": f"/download/{excel_filename}"
             }
 
-        # Stage 3: Handle other document formats
+        # Stage 3: Other formats are not processed yet
         return {
             "message": "Document uploaded successfully. Extraction for this format is coming next.",
             "filename": safe_filename,

@@ -275,7 +275,7 @@ async function generateCurriculum() {
 
     // Show processing status
 
-    generateButton.disabled = true;
+    generateButton.disabled = false;
 
     generateButton.textContent =
         "Generating Curriculum...";

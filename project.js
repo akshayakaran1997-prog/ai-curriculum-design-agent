@@ -1,18 +1,16 @@
 
 /* =========================================
    CURRICULUM AI - PROJECT WORKSPACE
-   Frontend + FastAPI Integration
+   Context-Driven Frontend + FastAPI Integration
 ========================================= */
+
 
 // =========================================
 // 1. BACKEND CONFIGURATION
 // =========================================
 
-// Replace this with your actual Codespaces
-// forwarded port 8000 URL.
-// Do not include a trailing slash.
-
-const API_BASE_URL = "https://silver-cod-5v5jxx9rx9rrh7qrp-8000.app.github.dev";
+const API_BASE_URL =
+    "https://silver-cod-5v5jxx9rx9rrh7qrp-8000.app.github.dev";
 
 
 // =========================================
@@ -63,7 +61,9 @@ fileInput.addEventListener("change", function () {
     downloadSection.innerHTML = "";
 
     if (!file) {
+
         fileList.textContent = "No document selected.";
+
         return;
     }
 
@@ -99,7 +99,9 @@ function collectProjectData() {
 
         const field = document.getElementById(fieldId);
 
-        projectData[fieldId] = field ? field.value.trim() : "";
+        projectData[fieldId] = field
+            ? field.value.trim()
+            : "";
 
     });
 
@@ -170,6 +172,7 @@ function loadProject() {
     );
 
     if (!savedProject) {
+
         return;
     }
 
@@ -217,7 +220,30 @@ function loadProject() {
 
 
 // =========================================
-// 8. GENERATE CURRICULUM USING FASTAPI
+// 8. COLLECT CONTEXT FOR AI
+// =========================================
+
+function collectAIContext() {
+
+    const projectContext = {};
+
+    projectFields.forEach(function (fieldId) {
+
+        const field = document.getElementById(fieldId);
+
+        projectContext[fieldId] = field
+            ? field.value.trim()
+            : "";
+
+    });
+
+    return projectContext;
+
+}
+
+
+// =========================================
+// 9. GENERATE CONTEXT-DRIVEN CURRICULUM
 // =========================================
 
 async function generateCurriculum() {
@@ -239,7 +265,7 @@ async function generateCurriculum() {
         return;
     }
 
-    // Validate PDF selection
+    // Validate PDF
 
     if (!file) {
 
@@ -249,8 +275,10 @@ async function generateCurriculum() {
         return;
     }
 
-    if (file.type !== "application/pdf" &&
-        !file.name.toLowerCase().endsWith(".pdf")) {
+    if (
+        file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")
+    ) {
 
         generationStatus.textContent =
             "Only PDF documents are supported.";
@@ -258,15 +286,9 @@ async function generateCurriculum() {
         return;
     }
 
-    // Validate backend URL
+    // Collect project context
 
-    if (API_BASE_URL.includes("PASTE_YOUR")) {
-
-        generationStatus.textContent =
-            "Please configure your FastAPI backend URL in project.js.";
-
-        return;
-    }
+    const projectContext = collectAIContext();
 
     // Clear previous results
 
@@ -275,23 +297,32 @@ async function generateCurriculum() {
 
     // Show processing status
 
-    generateButton.disabled = false;
+    generateButton.disabled = true;
 
     generateButton.textContent =
         "Generating Curriculum...";
 
     generationStatus.textContent =
-        "Uploading document and analysing its content. Please wait...";
+        "Sending project context and PDF to AI. Please wait...";
 
     try {
 
-        // Prepare PDF for backend upload
+        // Prepare multipart request
 
         const formData = new FormData();
 
+        // Add PDF
+
         formData.append("file", file);
 
-        // Send PDF to FastAPI
+        // Add all project information as JSON
+
+        formData.append(
+            "project_context",
+            JSON.stringify(projectContext)
+        );
+
+        // Send to FastAPI
 
         const response = await fetch(
             `${API_BASE_URL}/upload`,
@@ -308,30 +339,31 @@ async function generateCurriculum() {
         if (!response.ok) {
 
             throw new Error(
-                data.detail || data.message ||
+                data.detail ||
+                data.message ||
                 "Unable to generate curriculum."
             );
 
         }
 
-        if (data.status !== "success" || !data.curriculum) {
+        if (
+            data.status !== "success" ||
+            !data.curriculum
+        ) {
 
             throw new Error(
-                data.message || "Unexpected response from the backend."
+                data.message ||
+                "Unexpected response from the backend."
             );
 
         }
 
-        // Display success message
+        // Display successful result
 
         generationStatus.textContent =
-            "Curriculum generated successfully!";
-
-        // Display curriculum preview
+            "Context-aware curriculum generated successfully!";
 
         displayCurriculum(data.curriculum);
-
-        // Display Excel download link
 
         displayDownloadLink(data);
 
@@ -355,7 +387,7 @@ async function generateCurriculum() {
 
 
 // =========================================
-// 9. DISPLAY GENERATED CURRICULUM
+// 10. DISPLAY GENERATED CURRICULUM
 // =========================================
 
 function displayCurriculum(curriculum) {
@@ -366,15 +398,13 @@ function displayCurriculum(curriculum) {
 
     const modules = curriculum.curriculum_outline || [];
 
-    // Course overview heading
+    // Course overview
 
     const heading = document.createElement("h3");
 
     heading.textContent = "Generated Course Overview";
 
     curriculumResults.appendChild(heading);
-
-    // Course overview information
 
     const overviewContainer = document.createElement("div");
 
@@ -443,7 +473,7 @@ function displayCurriculum(curriculum) {
     curriculumResults.appendChild(overviewContainer);
 
 
-    // Module outline heading
+    // Module outline
 
     const moduleHeading = document.createElement("h3");
 
@@ -452,8 +482,6 @@ function displayCurriculum(curriculum) {
 
     curriculumResults.appendChild(moduleHeading);
 
-
-    // Display each module
 
     modules.forEach(function (module) {
 
@@ -525,7 +553,7 @@ function displayCurriculum(curriculum) {
 
 
 // =========================================
-// 10. HELPER TO DISPLAY TEXT SAFELY
+// 11. SAFE TEXT DISPLAY HELPER
 // =========================================
 
 function addTextItem(container, label, value) {
@@ -537,7 +565,9 @@ function addTextItem(container, label, value) {
     strong.textContent = label + ": ";
 
     const text = document.createTextNode(
-        value !== undefined && value !== null && value !== ""
+        value !== undefined &&
+        value !== null &&
+        value !== ""
             ? String(value)
             : "Not specified"
     );
@@ -552,7 +582,7 @@ function addTextItem(container, label, value) {
 
 
 // =========================================
-// 11. DISPLAY EXCEL DOWNLOAD LINK
+// 12. DISPLAY EXCEL DOWNLOAD LINK
 // =========================================
 
 function displayDownloadLink(data) {
@@ -590,7 +620,7 @@ function displayDownloadLink(data) {
 
 
 // =========================================
-// 12. CONNECT GENERATE BUTTON
+// 13. CONNECT GENERATE BUTTON
 // =========================================
 
 generateButton.addEventListener(
@@ -600,7 +630,7 @@ generateButton.addEventListener(
 
 
 // =========================================
-// 13. SIDEBAR NAVIGATION
+// 14. SIDEBAR NAVIGATION
 // =========================================
 
 const navigationLinks =
@@ -624,7 +654,7 @@ navigationLinks.forEach(function (link) {
 
 
 // =========================================
-// 14. LOAD SAVED PROJECT ON PAGE OPEN
+// 15. LOAD SAVED PROJECT ON PAGE OPEN
 // =========================================
 
 document.addEventListener(

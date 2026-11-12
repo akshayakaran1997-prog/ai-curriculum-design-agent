@@ -1,9 +1,11 @@
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+import json
+import shutil
+
+from pathlib import Path
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from pathlib import Path
-import shutil
 
 from services.pdf_reader import extract_pdf_text
 from services.pdf_analyzer import analyze_pdf_content
@@ -16,7 +18,7 @@ from services.ai_service import generate_ai_response
 app = FastAPI(
     title="AI Curriculum Design Agent",
     description="AI-powered course curriculum design and generation",
-    version="2.0.0"
+    version="2.1.0"
 )
 
 
@@ -41,7 +43,7 @@ def home():
     return {
         "message": "AI Curriculum Design Agent Backend is running!",
         "status": "success",
-        "version": "2.0.0"
+        "version": "2.1.0"
     }
 
 
@@ -82,9 +84,25 @@ def test_ai():
 
 # 7. Document upload and curriculum generation
 @app.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(
+    file: UploadFile = File(...),
+    project_context: str = Form("{}")
+):
 
-    # Supported document formats
+    # Stage 1: Validate project context
+    try:
+        project_details = json.loads(project_context)
+
+        if not isinstance(project_details, dict):
+            raise ValueError("Project context must be a JSON object.")
+
+    except (json.JSONDecodeError, ValueError):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid project context. Please send valid JSON."
+        )
+
+    # Stage 2: Validate uploaded document
     allowed_extensions = [".pdf", ".pptx", ".docx", ".txt"]
 
     file_extension = Path(file.filename or "").suffix.lower()
@@ -100,26 +118,36 @@ async def upload_document(file: UploadFile = File(...)):
 
     try:
 
-        # Stage 1: Save uploaded document
+        # Stage 3: Save uploaded document
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Stage 2: Process PDF documents
+        # Stage 4: Process PDF documents
         if file_extension == ".pdf":
 
-            # Stage 2.1: Extract PDF content
+            # 4.1 Extract PDF content
             extracted_content = extract_pdf_text(str(file_path))
 
-            # Stage 2.2: Analyze source document
+            if not extracted_content:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No content could be extracted from the PDF."
+                )
+
+            # 4.2 Analyze source document
+            # Project context integration will be added
+            # when the analyzer service is updated.
             analysis_report = analyze_pdf_content(extracted_content)
 
-            # Stage 2.3: Generate concise course curriculum
+            # 4.3 Generate course curriculum
+            # Project context integration will be added
+            # when the curriculum generator is updated.
             curriculum_data = generate_curriculum(
                 analysis_report,
                 extracted_content
             )
 
-            # Stage 2.4: Generate four-sheet Excel workbook
+            # 4.4 Generate four-sheet Excel workbook
             excel_filename = f"{file_path.stem}_curriculum.xlsx"
             excel_path = UPLOAD_DIR / excel_filename
 
@@ -127,16 +155,15 @@ async def upload_document(file: UploadFile = File(...)):
                 curriculum_data=curriculum_data,
                 output_path=str(excel_path),
                 analysis_report=analysis_report,
-                project_details={
-                    "project_name": file_path.stem
-                }
+                project_details=project_details
             )
 
-            # Stage 2.5: Return curriculum results
+            # 4.5 Return results
             return {
                 "message": "AI-powered course curriculum generated successfully",
                 "filename": safe_filename,
                 "status": "success",
+                "project_context": project_details,
                 "document_analysis": analysis_report,
                 "curriculum": curriculum_data,
                 "total_modules": curriculum_data["total_modules"],
@@ -144,11 +171,12 @@ async def upload_document(file: UploadFile = File(...)):
                 "download_url": f"/download/{excel_filename}"
             }
 
-        # Stage 3: Other formats are not processed yet
+        # Other document formats are not processed yet
         return {
             "message": "Document uploaded successfully. Extraction for this format is coming next.",
             "filename": safe_filename,
             "file_type": file_extension,
+            "project_context": project_details,
             "status": "uploaded"
         }
 

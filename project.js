@@ -653,11 +653,65 @@ navigationLinks.forEach(function (link) {
 });
 
 
-// =========================================
-// 15. LOAD SAVED PROJECT ON PAGE OPEN
-// =========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    loadProject
-);
+ // =========================================
+ // 15. START WITH A FRESH PROJECT
+ // =========================================
+
+ document.addEventListener("DOMContentLoaded", function () {
+
+     // Remove the previously saved project
+     localStorage.removeItem("curriculumAIProjectDraft");
+
+     // Clear all project input fields
+     projectFields.forEach(function (fieldId) {
+
+         const field = document.getElementById(fieldId);
+
+         if (!field) return;
+
+         if (field.tagName === "SELECT") {
+             field.selectedIndex = 0;
+         } else {
+             field.value = "";
+         }
+
+     });
+
+     // Clear uploaded PDF
+     if (fileInput) {
+         fileInput.value = "";
+     }
+
+     // Clear previous upload information
+     if (fileList) {
+         fileList.textContent = "No document selected.";
+     }
+
+     // Clear previous curriculum output
+     if (curriculumResults) {
+         curriculumResults.innerHTML = "";
+     }
+
+     // Clear Excel download section
+     if (downloadSection) {
+         downloadSection.innerHTML = "";
+     }
+
+     // Reset generation status
+     if (generationStatus) {
+         generationStatus.textContent = "";
+     }
+
+     // Reset the generate button
+     if (generateButton) {
+         generateButton.disabled = false;
+         generateButton.textContent = "✦ Generate Curriculum";
+     }
+
+     // Clear save status
+     if (saveStatus) {
+         saveStatus.textContent = "";
+     }
+
+ });
